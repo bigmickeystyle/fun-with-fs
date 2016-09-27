@@ -6,7 +6,7 @@ function readContents(path){
             console.log(err);
             process.exit;
         }
-        console.log(path + ' contains ' + files.join(', '));
+        console.log(__dirname + path + ' contains ' + files.join(', '));
         files.forEach(function(file){
             var nextPath = path + '/' + file;
             fs.stat(nextPath, function(err, stats){

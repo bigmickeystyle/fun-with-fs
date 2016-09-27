@@ -19,6 +19,6 @@ function getSize(path, object){
     return object;
 }
 
-var fin = getSize(filePath, obj);
+var fin = JSON.stringify(getSize(filePath, obj), null, 4);
 
-console.log(JSON.stringify(fin, null, 4));
+fs.writeFile('files.json', fin);
