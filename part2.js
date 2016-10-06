@@ -21,4 +21,6 @@ function getSize(path, object){
 
 var fin = JSON.stringify(getSize(filePath, obj), null, 4);
 
+console.log(fin);
+
 fs.writeFile('files.json', fin);

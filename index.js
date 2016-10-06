@@ -1,4 +1,4 @@
-var fs = require('fs');
+const fs = require('fs');
 
 function readContents(path){
     fs.readdir(path, function(err, files){
