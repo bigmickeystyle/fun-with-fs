@@ -1,34 +1,45 @@
 const modules = require('./modyools.js');
 var files = __dirname + "/files";
-var promiseArray = [];
 
-function recursiveRead(readfiles){
-    modules.readDirectory(readfiles).then(function(val){
-        var fullFiles = val.map(function(file){
-            var path = readfiles + '/' + file;
-            return path;
-        });
-        return fullFiles;
-    }).then(function(val){
-        var fullFilesPromises =  val.map(function(file){
-            return modules.getStats(file);
-        });
-        var fileNames =  val;
-        Promise.all(fullFilesPromises).then(function(val){
-            for(var i = 0; i < val.length; i++){
-                if (!val[i].isDirectory()){
-                    console.log(fileNames[i] + " is not a directory!");
-                }
-                else {
-                    console.log(fileNames[i] + " is a directory");
-                    promiseArray.push(recursiveRead(fileNames[i]));
-                }
+const fs = require("fs");
+
+var getStats = function(path){
+    return new Promise(function(resolve, reject) {
+        fs.stat(path, function(err, stats) {
+            if (err) {
+                reject(err);
             }
-            Promise.all(promiseArray);
+            else if (!stats.isDirectory()){
+                console.log(path + " is not a directory" );
+                resolve(false);
+            }
+            else {
+                console.log(path + " is a directory" );
+                recursiveRead(path).then(function(){
+                    resolve(true);
+                });
+            }
         });
-    }).then(function(){
-        console.log("done!");
     });
-}
+};
 
-recursiveRead(files);
+var recursiveRead = function(pathToRead){
+    return new Promise(function(resolve){
+        modules.readDirectory(pathToRead).then(function(val){
+            var promiseArray =  val.map(function(file){
+                return getStats(pathToRead + '/' + file);
+            });
+            Promise.all(promiseArray).then(function(){
+                resolve("Done");
+            }).catch(function(err){
+                console.log(err);
+            });
+        });
+    });
+
+};
+
+
+recursiveRead(files).then(function(val){
+    console.log(val);
+});
